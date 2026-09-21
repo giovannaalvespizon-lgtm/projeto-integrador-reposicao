@@ -19,8 +19,7 @@ explorando métricas de *headway*, velocidade permitida e tempo de ocupação do
 """)
 
 
-# Resolve o caminho a partir da pasta deste arquivo, e não do diretório de execução.
-# Assim, o app encontra o CSV mesmo quando é iniciado por outra pasta ou pelo Streamlit Cloud.
+
 DIRETORIO_APP = Path(__file__).resolve().parent
 CAMINHO_CSV = DIRETORIO_APP / "dataset_sinalizacao_ferroviaria.csv"
 
