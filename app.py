@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 import plotly.express as px
@@ -17,13 +19,34 @@ explorando métricas de *headway*, velocidade permitida e tempo de ocupação do
 """)
 
 
-@st.cache_data
-def carregar_dados():
-    
-    df = pd.read_csv("dataset_sinalizacao_ferroviaria.csv")
-    return df
+# Resolve o caminho a partir da pasta deste arquivo, e não do diretório de execução.
+# Assim, o app encontra o CSV mesmo quando é iniciado por outra pasta ou pelo Streamlit Cloud.
+DIRETORIO_APP = Path(__file__).resolve().parent
+CAMINHO_CSV = DIRETORIO_APP / "dataset_sinalizacao_ferroviaria.csv"
 
-df = carregar_dados()
+
+@st.cache_data
+def carregar_dados(caminho_csv: str):
+    """Carrega o dataset usando um caminho absoluto baseado na localização do app."""
+    caminho = Path(caminho_csv)
+
+    if not caminho.is_file():
+        raise FileNotFoundError(f"Arquivo não encontrado: {caminho}")
+
+    return pd.read_csv(caminho)
+
+
+try:
+    df = carregar_dados(str(CAMINHO_CSV))
+except FileNotFoundError as erro:
+    st.error(
+        "Não foi possível carregar o dataset. "
+        "Verifique se 'dataset_sinalizacao_ferroviaria.csv' está na mesma pasta de app.py."
+    )
+    st.stop()
+except Exception as erro:
+    st.error(f"Erro ao carregar o dataset: {erro}")
+    st.stop()
 
 
 st.sidebar.header("Filtros de Análise")
